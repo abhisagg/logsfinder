@@ -21,7 +21,6 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.example.logsfinder.config.LogsFinderConfig;
-import com.example.logsfinder.model.request.LogsSearchRequest;
 
 @Service
 public class LogsFinderService {
@@ -33,11 +32,11 @@ public class LogsFinderService {
 
     private static final int THREAD_POOL_SIZE = 10;
 
-    public List<String> searchLogs(LogsSearchRequest request) throws Exception {
+    public List<String> searchLogs(String searchWord, long from, long to, boolean ignoreCase) throws Exception {
         System.out.println("abcd");
         
-        LocalDateTime fromDateTime = LocalDateTime.ofEpochSecond(request.getFrom(), 0, ZoneOffset.UTC);;
-        LocalDateTime toDateTime = LocalDateTime.ofEpochSecond(request.getTo(), 0, ZoneOffset.UTC);;
+        LocalDateTime fromDateTime = LocalDateTime.ofEpochSecond(from, 0, ZoneOffset.UTC);;
+        LocalDateTime toDateTime = LocalDateTime.ofEpochSecond(to, 0, ZoneOffset.UTC);;
 
         List<String> matchingLogs = new ArrayList<>();
         ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
@@ -59,9 +58,9 @@ public class LogsFinderService {
 
                     String line;
                     while ((line = reader.readLine()) != null) {
-                        if (request.isIgnoreCase() && line.toLowerCase().contains(request.getSearchKeyword().toLowerCase())) {
+                        if (ignoreCase && line.toLowerCase().contains(searchWord.toLowerCase())) {
                             logs.add(line);
-                        } else if (line.contains(request.getSearchKeyword())) {
+                        } else if (line.contains(searchWord)) {
                             logs.add(line);
                         }
                     }
