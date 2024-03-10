@@ -20,7 +20,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.example.logsfinder.config.LogsFinderConfig;
-import com.example.logsfinder.model.request.LogsSearchRequest;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -36,11 +35,10 @@ public class LogsFinderServiceTest {
 
     @Test
     public void testSearchLogs_CaseSensitive() throws Exception {
-        LogsSearchRequest request = new LogsSearchRequest();
-        request.setFrom(Instant.parse("2022-01-01T00:00:00Z").getEpochSecond());
-        request.setTo(Instant.parse("2022-01-01T00:30:00Z").getEpochSecond());
-        request.setSearchKeyword("hello world");
-        request.setIgnoreCase(false);
+        String searchWord = "hello world";
+        long from = Instant.parse("2022-01-01T00:00:00Z").getEpochSecond();
+        long to = Instant.parse("2022-01-01T00:30:00Z").getEpochSecond();
+        boolean ignoreCase = false;
 
         S3Object s3Object = new S3Object();
         S3ObjectInputStream objectInputStream = new S3ObjectInputStream(
@@ -51,18 +49,17 @@ public class LogsFinderServiceTest {
         when(logsFinderConfig.getBucket()).thenReturn("test-bucket");
 
         List<String> matchingLogs = null;
-        matchingLogs = logsFinderService.searchLogs(request);
+        matchingLogs = logsFinderService.searchLogs(searchWord, from, to, ignoreCase);
         
         assertEquals(Arrays.asList("hello world"), matchingLogs);
     }
 
     @Test
     public void testSearchLogs_IgnoreCase() throws Exception {
-        LogsSearchRequest request = new LogsSearchRequest();
-        request.setFrom(Instant.parse("2022-01-01T00:00:00Z").getEpochSecond());
-        request.setTo(Instant.parse("2022-01-01T00:30:00Z").getEpochSecond());
-        request.setSearchKeyword("hello world");
-        request.setIgnoreCase(true);
+        String searchWord = "hello world";
+        long from = Instant.parse("2022-01-01T00:00:00Z").getEpochSecond();
+        long to = Instant.parse("2022-01-01T00:30:00Z").getEpochSecond();
+        boolean ignoreCase = true;
 
         S3Object s3Object = new S3Object();
         S3ObjectInputStream objectInputStream = new S3ObjectInputStream(
@@ -73,19 +70,18 @@ public class LogsFinderServiceTest {
         when(logsFinderConfig.getBucket()).thenReturn("test-bucket");
 
         List<String> matchingLogs = null;
-        matchingLogs = logsFinderService.searchLogs(request);
+        matchingLogs = logsFinderService.searchLogs(searchWord, from, to, ignoreCase);
         
         assertEquals(Arrays.asList("hello world", "Hello World"), matchingLogs);
     }
 
     @Test
     public void testSearchLogs_NoMatch() throws Exception {
-        LogsSearchRequest request = new LogsSearchRequest();
-        request.setFrom(Instant.parse("2022-01-01T00:00:00Z").getEpochSecond());
-        request.setTo(Instant.parse("2022-01-01T01:30:00Z").getEpochSecond());
-        request.setSearchKeyword("hello world");
-        request.setIgnoreCase(true);
-
+        String searchWord = "hello world";
+        long from = Instant.parse("2022-01-01T00:00:00Z").getEpochSecond();
+        long to = Instant.parse("2022-01-01T00:30:00Z").getEpochSecond();
+        boolean ignoreCase = true;
+    
         S3Object s3Object = new S3Object();
         S3ObjectInputStream objectInputStream = new S3ObjectInputStream(
                 new ByteArrayInputStream("world\n World".getBytes()), null);
@@ -95,17 +91,16 @@ public class LogsFinderServiceTest {
         when(logsFinderConfig.getBucket()).thenReturn("test-bucket");
 
         List<String> matchingLogs = null;
-        matchingLogs = logsFinderService.searchLogs(request);
+        matchingLogs = logsFinderService.searchLogs(searchWord, from, to, ignoreCase);
         assertEquals(Arrays.asList(), matchingLogs);
     }
 
     @Test
     public void testSearchLogs_MultipleFiles() throws Exception {
-        LogsSearchRequest request = new LogsSearchRequest();
-        request.setFrom(Instant.parse("2022-01-01T11:00:00Z").getEpochSecond());
-        request.setTo(Instant.parse("2022-01-01T13:30:00Z").getEpochSecond());
-        request.setSearchKeyword("hello world");
-        request.setIgnoreCase(true);
+        String searchWord = "hello world";
+        long from = Instant.parse("2022-01-01T11:00:00Z").getEpochSecond();
+        long to = Instant.parse("2022-01-01T13:30:00Z").getEpochSecond();
+        boolean ignoreCase = true;
 
         when(amazonS3.getObject(any(GetObjectRequest.class))).thenAnswer(invocation -> {
             GetObjectRequest getObjectRequest = invocation.getArgument(0);
@@ -131,7 +126,7 @@ public class LogsFinderServiceTest {
         when(logsFinderConfig.getBucket()).thenReturn("test-bucket");
 
         List<String> matchingLogs = null;
-        matchingLogs = logsFinderService.searchLogs(request);
+        matchingLogs = logsFinderService.searchLogs(searchWord, from, to, ignoreCase);
         assertEquals(Arrays.asList("hello world 1", "hello world 2"), matchingLogs);
     }
 }

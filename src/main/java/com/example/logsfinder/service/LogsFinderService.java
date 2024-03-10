@@ -32,9 +32,7 @@ public class LogsFinderService {
 
     private static final int THREAD_POOL_SIZE = 10;
 
-    public List<String> searchLogs(String searchWord, long from, long to, boolean ignoreCase) throws Exception {
-        System.out.println("abcd");
-        
+    public List<String> searchLogs(String searchWord, long from, long to, boolean ignoreCase) throws Exception {        
         LocalDateTime fromDateTime = LocalDateTime.ofEpochSecond(from, 0, ZoneOffset.UTC);;
         LocalDateTime toDateTime = LocalDateTime.ofEpochSecond(to, 0, ZoneOffset.UTC);;
 
@@ -43,7 +41,6 @@ public class LogsFinderService {
         List<Future<List<String>>> futures = new ArrayList<>();
 
         while (!fromDateTime.isAfter(toDateTime)) {
-            System.out.println(fromDateTime + " " + toDateTime);
             String folderName = fromDateTime.toLocalDate().toString();
             int hour = fromDateTime.getHour();
             String filePath = folderName + "/" + String.format("%02d", hour) + ".txt";
