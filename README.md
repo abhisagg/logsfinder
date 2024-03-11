@@ -9,6 +9,6 @@
 
 # Sample Curl Requests
 - To get all the logs containing `hello world` from timestamp 1698796800 to 1698969599
-  => `curl 'http://localhost:8080/api/v1/logs/search?q=hello%20world&to=1698796800&from=1698969599'`
+  => `curl 'http://localhost:8080/api/v1/logs/search?q=hello%20world&from=1698796800&to=1698969599'`
 - To make the search case insensitive, you can use `ignoreCase` param =>
-`curl 'http://localhost:8080/api/v1/logs/search?q=hello%20world&to=1698796800&from=1698969599&ignoreCase=true'`
+`curl 'http://localhost:8080/api/v1/logs/search?q=hello%20world&from=1698796800&to=1698969599&ignoreCase=true'`

@@ -22,9 +22,9 @@ public class LogsFinderController {
     private LogsFinderService logsFinderService;
 
     @GetMapping("/search")
-    public ResponseEntity<LogsSearchResponse> searchLogs(@RequestParam("q") String searchWord, @RequestParam long to, 
-                                                         @RequestParam long from, @RequestParam(required = false) boolean ignoreCase) throws Exception {
-        List<String> matchingLogs = logsFinderService.searchLogs(searchWord, to, from, ignoreCase);
+    public ResponseEntity<LogsSearchResponse> searchLogs(@RequestParam("q") String searchWord, @RequestParam long from, 
+                                                         @RequestParam long to, @RequestParam(required = false) boolean ignoreCase) throws Exception {
+        List<String> matchingLogs = logsFinderService.searchLogs(searchWord, from, to, ignoreCase);
         LogsSearchResponse response = new LogsSearchResponse();
         response.setLogs(matchingLogs);
         return new ResponseEntity<>(response, HttpStatusCode.valueOf(HttpStatus.SC_OK));
